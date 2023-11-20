@@ -9,6 +9,6 @@ namespace WebBooking.Models
         public int PricePerNight { get; set; }
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
-        public int? Images { get; set; }
+        public RoomImage? Images { get; set; }
     }
 }

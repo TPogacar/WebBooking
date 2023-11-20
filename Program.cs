@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<ApiContext>
-    (opt => opt.UseInMemoryDatabase("BookingDb"));
+    (opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("ReservationsContext")));
 
 builder.Services.AddControllersWithViews();
 
