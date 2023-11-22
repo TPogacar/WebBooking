@@ -46,8 +46,10 @@ namespace WebBooking.Controllers
         // GET: Reservations/Create
         public IActionResult Create()
         {
+            // all rooms have to be offered in dropdown 
             var rooms = _context.Rooms.Select(room => new { room.Id, room.Name });
-            return View();
+            
+            return View(rooms);
         }
 
         // POST: Reservations/Create
@@ -57,12 +59,24 @@ namespace WebBooking.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ArrivalDate,DepartureDate,NameAndSurname,EmailAddress,PhoneNumber,Footnote")] Reservation reservation)
         {
+            // validation based on EF (validation of the email included)
             if (ModelState.IsValid)
             {
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // additional validation
+            // arrival date has to be in the present or the future
+
+            // departure date has to be after the arrival
+            
+            
+            // user has to recieve thank-you email
+
+            // the hotel gets the email with user's informations and the total cost of his stay
+            
             return View(reservation);
         }
 
