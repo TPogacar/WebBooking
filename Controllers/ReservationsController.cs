@@ -46,6 +46,7 @@ namespace WebBooking.Controllers
         // GET: Reservations/Create
         public IActionResult Create()
         {
+            var rooms = _context.Rooms.Select(room => new { room.Id, room.Name });
             return View();
         }
 

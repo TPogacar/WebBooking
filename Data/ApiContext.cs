@@ -6,8 +6,8 @@ namespace WebBooking.Data
 {
     public class ApiContext : DbContext
     {
-        public DbSet<WebBooking.Models.Room> Rooms { get; set; }
-        public DbSet<WebBooking.Models.Reservation> Reservation { get; set; } = default!;
+        public DbSet<Room> Rooms { get; set; } = default!;
+        public DbSet<Reservation> Reservation { get; set; } = default!;
 
         public ApiContext(DbContextOptions<ApiContext> options) : base(options)
         {
