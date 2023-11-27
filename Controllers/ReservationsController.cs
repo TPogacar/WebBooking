@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -51,17 +54,19 @@ namespace WebBooking.Controllers
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
 
-                // additional validation
-                // arrival date has to be in the present or the future
-
-                
-
-
                 // user has to recieve thank-you email
+                SendEmailConfirmation(
+                    reservation.EmailAddress,
+                    "Potrditev rezervacije sobe",
+                    GetEmailBodyForCostumer(reservation));
 
                 // the hotel gets the email with user's informations and the total cost of his stay
+                SendEmailConfirmation(
+                    "pogacar.tami@gmail.com",  // hotel's email
+                    "Potrditev rezervacije sobe",
+                    GetEmailBodyForHotel(reservation));
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "HomeController");
             }
 
             PopulateRoomDropdown();
@@ -75,6 +80,7 @@ namespace WebBooking.Controllers
         }
 
 
+        #region RoomMethods
         private List<Room> GetRoomList()
         {
             List<Room> roomList = new List<Room>();
@@ -93,5 +99,59 @@ namespace WebBooking.Controllers
         {
             ViewBag.lstRooms = new SelectList(GetRoomList(), "Id", "Name", 0);
         }
+        #endregion
+
+
+        #region Email
+        /// <summary>
+        /// user recieves thank-you email
+        /// </summary>
+        /// <param name="reservation"></param>
+        /// <returns></returns>
+        private string GetEmailBodyForCostumer(Reservation reservation)
+        {
+            int durationOfReservation = Math.Max(1, reservation.DepartureDate.DayNumber - reservation.ArrivalDate.DayNumber);
+
+            return "Hvala za oddano povpraševanje!\n\n" +
+                "Datum registracije: " + reservation.ArrivalDate.ToString() + "\n" +
+                "Datum odjave: " + reservation.DepartureDate.ToString() + "\n" +
+                "Izbrana soba: " + reservation.SelectedRoom.Name + "\n" +
+                "Skupaj za plačilo: " + durationOfReservation * reservation.SelectedRoom.PricePerNight + "\n\n" +
+                "Želimo Vam lep preostanek dneva in se že veselimo Vašega prihoda.";
+        }
+
+        /// <summary>
+        /// the hotel gets the email with user's informations and the total cost of his stay
+        /// </summary>
+        /// <param name="reservation"></param>
+        /// <returns></returns>
+        private string GetEmailBodyForHotel(Reservation reservation)
+        {
+            return "Čestitamo! Prejeli ste novo rezervacijo.\n\n" +
+                "Ime in priimek: " + reservation.NameAndSurname + "\n" +
+                "Tel. št.: " + reservation.PhoneNumber + "\n" +
+                "Email: " + reservation.EmailAddress + "\n" +
+                "Datum registracije: " + reservation.ArrivalDate.ToString() + "\n" +
+                "Datum odjave: " + reservation.DepartureDate.ToString() + "\n" +
+                "Sporočilo: " + reservation.Footnote + "\n\n";
+        }
+
+        private void SendEmailConfirmation(string email, string subject, string body)
+        {
+            try
+            {
+                MailMessage message = new MailMessage("veliki.posiljalec.mailov@gmail.com", email, subject, body);
+                NetworkCredential netCred = new NetworkCredential("veliki.posiljalec.mailov@gmail.com", "Geslo!12");
+                SmtpClient smtpobj = new SmtpClient("smtp.live.com", 587);
+                smtpobj.EnableSsl = true;
+                smtpobj.Credentials = netCred;
+                smtpobj.Send(message);
+            }
+            catch(Exception ex)
+            {
+                throw (new Exception("An Exception accured while sending Email. Email was not send.\n" + ex));
+            }
+        }
+        #endregion
     }
 }
