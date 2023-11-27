@@ -1,4 +1,4 @@
-﻿@model WebBooking.ViewModels.ReservationViewModel
+﻿@model WebBooking.Models.Reservation
 
 @{
     ViewData["Title"] = "Create";
@@ -11,45 +11,44 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ArrivalDate" class="control-label">test test</label>
-                <input asp-for="ArrivalDate" class="form-control" />
-                <span asp-validation-for="ArrivalDate" class="text-danger"></span>
+                <label asp-for="@Model.ArrivalDate" class="control-label"></label>
+                <input asp-for="@Model.ArrivalDate" class="form-control" />
+                <span asp-validation-for="@Model.ArrivalDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DepartureDate" class="control-label"></label>
-                <input asp-for="DepartureDate" class="form-control" />
-                <span asp-validation-for="DepartureDate" class="text-danger"></span>
+                <label asp-for="@Model.DepartureDate" class="control-label"></label>
+                <input asp-for="@Model.DepartureDate" class="form-control" />
+                <span asp-validation-for="@Model.DepartureDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="SelectedRoom" class="control-label"></label>
-                <select
-                    asp-for="SelectedRoom"
+                <label asp-for="@Model.RoomId" class="control-label"></label>
+                <select asp-for="@Model.RoomId"
                     class="form-control"
-                    asp-items="@(new SelectList(ViewBag.lstRooms, "Id", "Name"))">
+                    asp-items="@ViewBag.lstRooms">
                 </select>
-                <span asp-validation-for="SelectedRoom" class="text-danger"></span>
+                <span asp-validation-for="@Model.RoomId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NameAndSurname" class="control-label"></label>
-                <input asp-for="NameAndSurname" class="form-control" />
-                <span asp-validation-for="NameAndSurname" class="text-danger"></span>
+                <label asp-for="@Model.NameAndSurname" class="control-label"></label>
+                <input asp-for="@Model.NameAndSurname" class="form-control" />
+                <span asp-validation-for="@Model.NameAndSurname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EmailAddress" class="control-label"></label>
-                <input asp-for="EmailAddress" class="form-control" />
-                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                <label asp-for="@Model.EmailAddress" class="control-label"></label>
+                <input asp-for="@Model.EmailAddress" class="form-control" />
+                <span asp-validation-for="@Model.EmailAddress" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                <label asp-for="@Model.PhoneNumber" class="control-label"></label>
+                <input asp-for="@Model.PhoneNumber" class="form-control" />
+                <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Footnote" class="control-label"></label>
-                <textarea asp-for="Footnote" class="form-control"></textarea>
-                <span asp-validation-for="Footnote" class="text-danger"></span>
+                <label asp-for="@Model.Footnote" class="control-label"></label>
+                <textarea asp-for="@Model.Footnote" class="form-control"></textarea>
+                <span asp-validation-for="@Model.Footnote" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

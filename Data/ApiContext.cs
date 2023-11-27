@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebBooking.Models;
-using WebBooking.ViewModels;
 
 namespace WebBooking.Data
 {
@@ -19,29 +18,17 @@ namespace WebBooking.Data
 
         }
 
-        #region rooms
-        private static string _roomNameForDropdown = "-- razpoložljive sobe --";
 
-        public List<string?> RoomNames
+        #region methods
+        public Room? GetRoomById(int id)
         {
-            get
+            if (!Rooms.Any())
             {
-                return Rooms.Select(room => room.Name).ToList();
+                return default;
             }
-        }
-
-        public Room? GetRoomByName(string name)
-        {
-            return Rooms.FirstOrDefault(room => room.Name == name);
-        }
-
-
-        public List<Room> GetRoomsList()
-        {
-            List<Room> list = Rooms.Select(room => room).ToList();
-            list.Insert(0, new Room() { Id = 0, Name = _roomNameForDropdown });
-
-            return list;
+            return Rooms
+                .Where(room => room.Id == id)?
+                .FirstOrDefault();
         }
         #endregion
     }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBooking.Data;
 
@@ -11,9 +12,11 @@ using WebBooking.Data;
 namespace WebBooking.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class ApiContextModelSnapshot : ModelSnapshot
+    [Migration("20231127141012_fixedModels")]
+    partial class fixedModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,8 +86,6 @@ namespace WebBooking.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId");
-
                     b.ToTable("Reservation");
                 });
 
@@ -124,17 +125,6 @@ namespace WebBooking.Migrations
                     b.HasOne("WebBooking.Models.Room", null)
                         .WithMany("AllImage")
                         .HasForeignKey("RoomId");
-                });
-
-            modelBuilder.Entity("WebBooking.Models.Reservation", b =>
-                {
-                    b.HasOne("WebBooking.Models.Room", "SelectedRoom")
-                        .WithMany()
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SelectedRoom");
                 });
 
             modelBuilder.Entity("WebBooking.Models.Room", b =>

@@ -34,8 +34,7 @@ namespace WebBooking.Controllers
         public IActionResult Create()
         {
             // all rooms have to be offered in dropdown 
-            ViewBag.lstRooms = _context.GetRoomsList();
-
+            PopulateRoomDropdown();
             return View();
         }
 
@@ -44,7 +43,7 @@ namespace WebBooking.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ArrivalDate,DepartureDate,SelectedRoom,NameAndSurname,EmailAddress,PhoneNumber,Footnote")] Reservation reservation)
+        public async Task<IActionResult> Create([Bind("Id,ArrivalDate,DepartureDate,RoomId,NameAndSurname,EmailAddress,PhoneNumber,Footnote")] Reservation reservation)
         {
             // validation based on EF (validation of the email included)
             if (ModelState.IsValid)
@@ -55,7 +54,7 @@ namespace WebBooking.Controllers
                 // additional validation
                 // arrival date has to be in the present or the future
 
-                // departure date has to be after the arrival
+                
 
 
                 // user has to recieve thank-you email
@@ -65,7 +64,7 @@ namespace WebBooking.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            //ViewBag.listOfRooms = GetRoomsList();
+            PopulateRoomDropdown();
             return View(reservation);
         }
 
@@ -73,6 +72,26 @@ namespace WebBooking.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        private List<Room> GetRoomList()
+        {
+            List<Room> roomList = new List<Room>();
+            var list = _context.Rooms.Select(room => room);
+            if (list != null &&
+                list.FirstOrDefault() != default)
+            {
+                roomList = list.ToList<Room>();
+            }
+
+            roomList.Insert(0, new Room() { Id = 0, Name = "-- razpoložljive sobe --" });
+            return roomList;
+        }
+
+        private void PopulateRoomDropdown(object selectedRoom=null)
+        {
+            ViewBag.lstRooms = new SelectList(GetRoomList(), "Id", "Name", 0);
         }
     }
 }
