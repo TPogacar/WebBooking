@@ -45,7 +45,7 @@ namespace WebBooking.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("WebBooking.Models.Reservation", b =>
@@ -85,7 +85,7 @@ namespace WebBooking.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Reservation");
+                    b.ToTable("Reservation", (string)null);
                 });
 
             modelBuilder.Entity("WebBooking.Models.Room", b =>
@@ -116,7 +116,7 @@ namespace WebBooking.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("WebBooking.Models.Image", b =>

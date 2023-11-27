@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -19,34 +20,30 @@ namespace WebBooking.Models
         [DataType(DataType.Date)]
         [DateIsInTheFuture]
         [DisplayName("Datum prihoda")]
-        public DateOnly ArrivalDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+        public DateOnly ArrivalDate { get; set; }
 
         [Required(ErrorMessage = "Prosim, Izberite datum odhoda")]
         [DataType(DataType.Date)]
         [DisplayName("Datum odhoda")]
-        public DateOnly DepartureDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+        public DateOnly DepartureDate { get; set; }
 
+        private int _roomId;
         private Room? _room;
         [Required(ErrorMessage = "Prosim, izberite sobo")]
         [DisplayName("Izbira sobe")]
-        [BindProperty]
         public int RoomId
         {
             get
             {
                 if (_room != default) return _room.Id;
-                return -1;
+                return _roomId;
             }
             set
             {
-                if (Rooms != null)
-                {
-                    _room = Rooms
-                        .Where(room => room.Id == value)
-                        .FirstOrDefault();
-                }
+                _roomId = value;
             }
         }
+        [BindProperty]
         public Room? SelectedRoom
         {
             get { return _room; }
@@ -107,6 +104,5 @@ namespace WebBooking.Models
             }
         }
         #endregion
-
     }
 }

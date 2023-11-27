@@ -27,18 +27,20 @@ namespace WebBooking.Controllers
             _context = context;
         }
 
-        // GET: Reservations
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Reservation.ToListAsync());
-        }
-
         // GET: Reservations/Create
         public IActionResult Create()
         {
-            // all rooms have to be offered in dropdown 
+            // set default values for dates
+            Reservation reservation = new Reservation()
+            {
+                ArrivalDate = DateOnly.FromDateTime(DateTime.Today),
+                DepartureDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1))
+            };
+
+            // all rooms have to be offered in dropdown
             PopulateRoomDropdown();
-            return View();
+
+            return View(reservation);
         }
 
         // POST: Reservations/Create
@@ -46,8 +48,11 @@ namespace WebBooking.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ArrivalDate,DepartureDate,RoomId,NameAndSurname,EmailAddress,PhoneNumber,Footnote")] Reservation reservation)
+        public async Task<IActionResult> Create([Bind("Id,ArrivalDate,DepartureDate,RoomId,NameAndSurname,EmailAddress,PhoneNumber,Footnote,Rooms")] Reservation reservation)
         {
+            // set selected room
+            reservation.SelectedRoom = _context.GetRoomById(reservation.RoomId);
+
             // validation based on EF (validation of the email included)
             if (ModelState.IsValid)
             {
@@ -95,9 +100,9 @@ namespace WebBooking.Controllers
             return roomList;
         }
 
-        private void PopulateRoomDropdown(object selectedRoom=null)
-        {
-            ViewBag.lstRooms = new SelectList(GetRoomList(), "Id", "Name", 0);
+        private void PopulateRoomDropdown()
+        {            
+            ViewBag.lstRooms = new SelectList(_context.Rooms.Select(room => room).ToList(), "Id", "Name", 0);
         }
         #endregion
 
