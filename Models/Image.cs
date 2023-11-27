@@ -8,12 +8,15 @@ namespace WebBooking.Models
     public class Image
     {
         [Key]
-        [Column(Order = 0)]
         public int Id { get; set; }
 
-        [Column(Order = 1)]
-        public string Name { get; set; }
+        [Required]
+        public string? Name { get; set; }
 
+        [Required]
         public byte[]? Content { get; set; }
+
+
+        //public virtual Room Room { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WebBooking.Data;
 using WebBooking.Models;
@@ -5,11 +6,8 @@ using WebBooking.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//builder.Services.AddDbContext<ApiContext>
-//    (opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("ReservationsContext")));
-
 builder.Services.AddDbContext<ApiContext>
-    (opt => opt.UseSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=WebBookingDb;Integrated Security=True;Multiple Active Result Sets=True"));
+    (opt => opt.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=WebBookingDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"));
 
 builder.Services.AddControllersWithViews();
 

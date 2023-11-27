@@ -12,8 +12,8 @@ using WebBooking.Data;
 namespace WebBooking.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20231121120719_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231127104020_completed-db")]
+    partial class completeddb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,12 @@ namespace WebBooking.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Content")
+                        .IsRequired()
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RoomId")
                         .HasColumnType("int");
@@ -43,7 +48,7 @@ namespace WebBooking.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Image");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("WebBooking.Models.Reservation", b =>
@@ -57,27 +62,31 @@ namespace WebBooking.Migrations
                     b.Property<DateOnly>("ArrivalDate")
                         .HasColumnType("date");
 
-                    b.Property<int?>("BookedRoomId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("DepartureDate")
                         .HasColumnType("date");
 
                     b.Property<string>("EmailAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Footnote")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameAndSurname")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SelectedRoomId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookedRoomId");
+                    b.HasIndex("SelectedRoomId");
 
                     b.ToTable("Reservation");
                 });
@@ -94,9 +103,13 @@ namespace WebBooking.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PricePerNight")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReservationId")
                         .HasColumnType("int");
 
                     b.Property<string>("ShortDescription")
@@ -104,28 +117,44 @@ namespace WebBooking.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReservationId");
+
                     b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("WebBooking.Models.Image", b =>
                 {
                     b.HasOne("WebBooking.Models.Room", null)
-                        .WithMany("Images")
+                        .WithMany("AllImage")
                         .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("WebBooking.Models.Reservation", b =>
                 {
-                    b.HasOne("WebBooking.Models.Room", "BookedRoom")
+                    b.HasOne("WebBooking.Models.Room", "SelectedRoom")
                         .WithMany()
-                        .HasForeignKey("BookedRoomId");
+                        .HasForeignKey("SelectedRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("BookedRoom");
+                    b.Navigation("SelectedRoom");
                 });
 
             modelBuilder.Entity("WebBooking.Models.Room", b =>
                 {
-                    b.Navigation("Images");
+                    b.HasOne("WebBooking.Models.Reservation", null)
+                        .WithMany("Rooms")
+                        .HasForeignKey("ReservationId");
+                });
+
+            modelBuilder.Entity("WebBooking.Models.Reservation", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("WebBooking.Models.Room", b =>
+                {
+                    b.Navigation("AllImage");
                 });
 #pragma warning restore 612, 618
         }
