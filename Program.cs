@@ -2,8 +2,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using WebBooking.Data;
 using WebBooking.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using WebBooking.Email;
+using Microsoft.AspNetCore.Identity;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add email credentials
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add services to the container.
 builder.Services.AddDbContext<ApiContext>

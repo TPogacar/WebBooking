@@ -15,12 +15,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Identity.Client;
 using WebBooking.Data;
 using WebBooking.Models;
+using WebBooking.Email;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
+using Microsoft.Extensions.Hosting;
 
 namespace WebBooking.Controllers
 {
     public class ReservationsController : Controller
     {
         private readonly ApiContext _context;
+        private readonly IEmailSender _emailSender;
 
         public ReservationsController(ApiContext context)
         {
@@ -59,19 +65,21 @@ namespace WebBooking.Controllers
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
 
+                EmailSender client = new EmailSender();
                 // user has to recieve thank-you email
-                SendEmailConfirmation(
+                client.SendEmail(
                     reservation.EmailAddress,
                     "Potrditev rezervacije sobe",
                     GetEmailBodyForCostumer(reservation));
 
                 // the hotel gets the email with user's informations and the total cost of his stay
-                SendEmailConfirmation(
-                    "pogacar.tami@gmail.com",  // hotel's email
+                client.SendEmail(
+                    "veliki.posiljalec.mailov@gmail.com",
                     "Potrditev rezervacije sobe",
                     GetEmailBodyForHotel(reservation));
 
-                return RedirectToAction("Index", "HomeController");
+                PopulateRoomDropdown();
+                return View();
             }
 
             PopulateRoomDropdown();
@@ -121,7 +129,7 @@ namespace WebBooking.Controllers
                 "Datum registracije: " + reservation.ArrivalDate.ToString() + "\n" +
                 "Datum odjave: " + reservation.DepartureDate.ToString() + "\n" +
                 "Izbrana soba: " + reservation.SelectedRoom.Name + "\n" +
-                "Skupaj za plačilo: " + durationOfReservation * reservation.SelectedRoom.PricePerNight + "\n\n" +
+                "Skupaj za plačilo: " + durationOfReservation * reservation.SelectedRoom.PricePerNight + "€\n\n" +
                 "Želimo Vam lep preostanek dneva in se že veselimo Vašega prihoda.";
         }
 
@@ -139,23 +147,6 @@ namespace WebBooking.Controllers
                 "Datum registracije: " + reservation.ArrivalDate.ToString() + "\n" +
                 "Datum odjave: " + reservation.DepartureDate.ToString() + "\n" +
                 "Sporočilo: " + reservation.Footnote + "\n\n";
-        }
-
-        private void SendEmailConfirmation(string email, string subject, string body)
-        {
-            try
-            {
-                MailMessage message = new MailMessage("veliki.posiljalec.mailov@gmail.com", email, subject, body);
-                NetworkCredential netCred = new NetworkCredential("veliki.posiljalec.mailov@gmail.com", "Geslo!12");
-                SmtpClient smtpobj = new SmtpClient("smtp.live.com", 587);
-                smtpobj.EnableSsl = true;
-                smtpobj.Credentials = netCred;
-                smtpobj.Send(message);
-            }
-            catch(Exception ex)
-            {
-                throw (new Exception("An Exception accured while sending Email. Email was not send.\n" + ex));
-            }
         }
         #endregion
     }
